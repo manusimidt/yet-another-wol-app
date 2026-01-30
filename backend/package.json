@@ -26,6 +26,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/morgan": "^1.9.10",
     "@types/node": "^25.1.0",
+    "@types/wake_on_lan": "^0.0.33",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"

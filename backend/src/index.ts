@@ -7,10 +7,7 @@ import morgan from "morgan";
 import path from "path";
 import wol from "wake_on_lan";
 
-if (process.env.NODE_ENV == "development") {
-  // Load environment variables from .env file
-  dotenv.config();
-}
+dotenv.config();
 
 // Type definitions
 interface Server {
