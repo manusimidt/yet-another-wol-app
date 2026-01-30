@@ -1,0 +1,10 @@
+
+services:
+  yawapp:
+    image: manusimidt/yawapp:test
+    restart: unless-stopped
+    network_mode: host # IMPORTANT, without it WOL packets won't reach anything outside the docker host
+    volumes:
+      - ./backend/src/servers.yaml:/app/backend/dist/servers.yaml:ro
+    environment:
+      - WOL_GLOBAL_PIN=1234

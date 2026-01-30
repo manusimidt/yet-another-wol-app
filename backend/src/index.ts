@@ -6,8 +6,11 @@ import yaml from "js-yaml";
 import morgan from "morgan";
 import path from "path";
 import wol from "wake_on_lan";
-// Load environment variables from .env file
-dotenv.config();
+
+if (process.env.NODE_ENV == "development") {
+  // Load environment variables from .env file
+  dotenv.config();
+}
 
 // Type definitions
 interface Server {
@@ -35,7 +38,7 @@ interface WolOptions {
 }
 
 // Load configuration
-const CONFIG_PATH = process.env.CONFIG_PATH || path.join(__dirname, "../servers.yaml");
+const CONFIG_PATH = process.env.CONFIG_PATH || path.join(__dirname, "./servers.yaml");
 let config: Config;
 
 try {
@@ -84,7 +87,7 @@ if (config.security && config.security.pin_required) {
 }
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3210; // todo env variable in the future
 
 app.use(cors());
 app.use(express.json());

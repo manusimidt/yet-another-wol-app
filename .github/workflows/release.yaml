@@ -1,0 +1,39 @@
+name: Public Release Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      hash:
+        description: "Commit hash to pull image for"
+        required: true
+      version:
+        description: "Version tag to publish (e.g. v1.4.2)"
+        required: true
+      confirm:
+        description: "Type 'banana' to confirm public release"
+        required: true
+
+jobs:
+  release:
+    name: Create Public Release
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.confirm == 'banana' }}
+    
+    steps:
+      - name: Pull image from GHCR
+        run: |
+            docker pull manusimidt/yawapp:${{ github.event.inputs.hash }}
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Retag image for Docker Hub (version + latest)
+        run: |
+          docker tag manusimidt/yawapp:${{ github.event.inputs.hash }} \
+                     manusimidt/yawapp:${{ github.event.inputs.version }}
+
+          docker tag manusimidt/yawapp:${{ github.event.inputs.hash }} \
+                     manusimidt/yawapp:latest

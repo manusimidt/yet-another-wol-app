@@ -15,7 +15,3 @@ servers:
     mac: "AA:BB:CC:DD:EE:02"
     broadcast: "192.168.1.255"
 
-  - name: "backup-server"
-    ip: "192.168.1.30"
-    mac: "AA:BB:CC:DD:EE:03"
-    broadcast: "192.168.1.255"
