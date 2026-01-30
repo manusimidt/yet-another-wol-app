@@ -1,7 +1,7 @@
 
 services:
   yawapp:
-    image: manusimidt/yawapp:test
+    image: manusimidt/yawapp:a501d70dc17257b0b71c3e2419d9238cfe725097
     restart: unless-stopped
     network_mode: host # IMPORTANT, without it WOL packets won't reach anything outside the docker host
     volumes:
