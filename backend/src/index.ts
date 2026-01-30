@@ -38,7 +38,7 @@ interface WolOptions {
 }
 
 // Load configuration
-const CONFIG_PATH = process.env.CONFIG_PATH || path.join(__dirname, "./servers.yaml");
+const CONFIG_PATH = process.env.CONFIG_PATH || "/app/config/servers.yaml";
 let config: Config;
 
 try {

@@ -46,7 +46,7 @@ YAWAPP_PIN = 1234
 nano docker-compose.yaml
 ```
 ```yaml
-
+coming soon 😊
 ```
 
 ## 4. Start it up 🥳
