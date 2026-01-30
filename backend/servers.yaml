@@ -1,0 +1,21 @@
+# THIS IS ONLY FOR DEVELOPMENT
+# At runtime a servers.yaml file is mounted into dist
+
+security:
+  pin_required: true
+
+servers:
+  - name: "nas-server"
+    ip: "192.168.1.10"
+    mac: "AA:BB:CC:DD:EE:01"
+    broadcast: "192.168.1.255"
+
+  - name: "media-pc"
+    ip: "192.168.1.20"
+    mac: "AA:BB:CC:DD:EE:02"
+    broadcast: "192.168.1.255"
+
+  - name: "backup-server"
+    ip: "192.168.1.30"
+    mac: "AA:BB:CC:DD:EE:03"
+    broadcast: "192.168.1.255"
