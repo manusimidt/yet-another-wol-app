@@ -20,17 +20,20 @@ jobs:
     if: ${{ github.event.inputs.confirm == 'banana' }}
     
     steps:
-      - name: Pull image from GHCR
+      - name: Pull amd64 image from GHCR
         run: |
-            docker pull manusimidt/yawapp:${{ github.event.inputs.hash }}
+          docker pull manusimidt/yawapp:${{ github.event.inputs.hash }}-amd64
 
-      - name: Retag image for Docker Hub (version + latest)
+      - name: Pull arm64 image from GHCR
         run: |
-          docker tag manusimidt/yawapp:${{ github.event.inputs.hash }} \
-                     manusimidt/yawapp:${{ github.event.inputs.version }}
+          docker pull manusimidt/yawapp:${{ github.event.inputs.hash }}-arm64
 
-          docker tag manusimidt/yawapp:${{ github.event.inputs.hash }} \
-                     manusimidt/yawapp:latest
+      - name: Retag images for Docker Hub (version + latest)
+        run: |
+          for arch in amd64 arm64; do
+            docker tag manusimidt/yawapp:${{ github.event.inputs.hash }}-$arch manusimidt/yawapp:${{ github.event.inputs.version }}-$arch
+            docker tag manusimidt/yawapp:${{ github.event.inputs.hash }}-$arch manusimidt/yawapp:latest-$arch
+          done
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -38,7 +41,9 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Push image to Docker Hub
+      - name: Push arch images to Docker Hub
         run: |
-          docker push manusimidt/yawapp:${{ github.event.inputs.version }}
-          docker push manusimidt/yawapp:latest
+          for arch in amd64 arm64; do
+            docker push manusimidt/yawapp:${{ github.event.inputs.version }}-$arch
+            docker push manusimidt/yawapp:latest-$arch
+          done
