@@ -8,7 +8,7 @@
 - Easy deployment via `docker-compose.yaml`
 - Build for Raspberry PI (should work on any Linux server)
 
-<video src="assets/app.mp4" controls muted playsinline style="max-width: 100%; height: auto;"></video>
+![Demo Video](assets/app.gif)
 
 
 ## Inspiration
