@@ -1,4 +1,4 @@
-# Yet Another WOL Webapplication (YAWAPP)
+# Yet Another WOL Webapplication
 
 ## Features
 - Fancy UI 🌟
@@ -6,7 +6,7 @@
 - Optionally set a PIN to enter before sending WoL packet 🔐
 - Configure servers easily via yaml file
 - Easy deployment via `docker-compose.yaml`
-- Build for Raspberry PI
+- Build for Raspberry PI (should work on any Linux server)
 
 ## Inspiration
 Electricity in germany is quite expensive 🥲 and of course, shutting down your homelab servers to save energy is always 
@@ -15,9 +15,9 @@ Therefore, in my current homelab, I have a always-on RaspberryPI which I use to 
 can access `YAWAPP` and easily power on my servers via my phone
 
 # Deploy 
-## 1. Create a server.yaml file
+## 1. Create a servers.yaml file
 ```shell
-nano server.yaml
+nano servers.yaml
 ```
 ```yaml
 security:
@@ -46,7 +46,14 @@ YAWAPP_PIN = 1234
 nano docker-compose.yaml
 ```
 ```yaml
-coming soon 😊
+services:
+  yawapp:
+    image: manusimidt/yawapp:latest
+    restart: unless-stopped
+    network_mode: host # IMPORTANT, without it WOL packets won't reach anything outside the docker host
+    volumes:
+      - .servers.yaml:/app/config/servers.yaml:ro
+    env_file: .env
 ```
 
 ## 4. Start it up 🥳

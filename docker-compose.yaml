@@ -7,4 +7,4 @@ services:
     volumes:
       - ./backend/src/servers.yaml:/app/config/servers.yaml:ro
     environment:
-      - WOL_GLOBAL_PIN=1234
+      - YAWAPP_PIN=1234

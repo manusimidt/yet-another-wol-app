@@ -72,10 +72,10 @@ config.servers.forEach((server, index) => {
 
 // Validate PIN requirement
 if (config.security && config.security.pin_required) {
-  const globalPin = process.env.WOL_GLOBAL_PIN;
+  const globalPin = process.env.YAWAPP_PIN;
   if (!globalPin) {
-    console.error("ERROR: PIN is required but WOL_GLOBAL_PIN environment variable is not set!");
-    console.error("Please set WOL_GLOBAL_PIN environment variable and restart the application.");
+    console.error("ERROR: PIN is required but YAWAPP_PIN environment variable is not set!");
+    console.error("Please set YAWAPP_PIN environment variable and restart the application.");
     process.exit(1);
   }
   console.log("PIN security enabled");
@@ -113,7 +113,7 @@ app.post("/api/wake/:serverName", (req: Request<{ serverName: string }, unknown,
 
   // Validate PIN first if required (before checking server existence to prevent enumeration)
   if (config.security && config.security.pin_required) {
-    const globalPin = process.env.WOL_GLOBAL_PIN;
+    const globalPin = process.env.YAWAPP_PIN;
     if (pin !== globalPin) {
       res.status(403).json({ error: "Invalid PIN or server not found" });
       return;

@@ -8,10 +8,11 @@ servers:
   - name: "nas-server"
     ip: "192.168.1.10"
     mac: "AA:BB:CC:DD:EE:01"
-    broadcast: "192.168.1.255"
+    broadcast: "255.255.255.255"
 
   - name: "media-pc"
     ip: "192.168.1.20"
     mac: "AA:BB:CC:DD:EE:02"
-    broadcast: "192.168.1.255"
+    broadcast: "255.255.255.255"
+
 
