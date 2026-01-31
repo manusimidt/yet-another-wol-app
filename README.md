@@ -8,6 +8,9 @@
 - Easy deployment via `docker-compose.yaml`
 - Build for Raspberry PI (should work on any Linux server)
 
+<video src="assets/app.mp4" controls muted playsinline style="max-width: 100%; height: auto;"></video>
+
+
 ## Inspiration
 Electricity in Germany is quite expensive 🥲 and of course, shutting down your homelab servers to save energy is always 
 a good thing for the environment 🌍. 
