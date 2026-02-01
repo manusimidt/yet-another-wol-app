@@ -54,11 +54,28 @@
         border: 1px solid #262626;
         border-radius: 8px;
         padding: 20px;
+        position: relative;
         transition: border-color 0.15s ease;
       }
 
       .server-card:hover {
         border-color: #404040;
+      }
+
+      .ping-indicator {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #262626;
+        border: 1px solid #404040;
+      }
+
+      .ping-indicator.ok {
+        background: #22c55e;
+        border-color: #166534;
       }
 
       .server-name {
@@ -293,6 +310,9 @@
       let pinRequired = false;
       let pendingWake = null;
 
+      // ping status per serverName: boolean (true = ping ok)
+      const pingStatus = {};
+
       // Load servers on page load
       async function loadServers() {
         try {
@@ -303,6 +323,7 @@
           pinRequired = data.pinRequired;
 
           renderServers();
+          startPingChecks();
         } catch (error) {
           console.error("Error loading servers:", error);
           showStatus("Failed to load servers", "error");
@@ -323,6 +344,11 @@
           const card = document.createElement("div");
           card.className = "server-card";
 
+          const indicator = document.createElement("div");
+          indicator.className = pingStatus[server.name] ? "ping-indicator ok" : "ping-indicator";
+          indicator.setAttribute("aria-label", "Ping status");
+          indicator.dataset.serverName = server.name;
+
           const nameEl = document.createElement("div");
           nameEl.className = "server-name";
           nameEl.textContent = server.name;
@@ -336,10 +362,46 @@
           button.textContent = "Wake Up";
           button.onclick = () => wakeServer(server.name);
 
+          card.appendChild(indicator);
           card.appendChild(nameEl);
           card.appendChild(ipEl);
           card.appendChild(button);
           serverList.appendChild(card);
+        });
+      }
+
+      function cssEscape(value) {
+        if (window.CSS && typeof window.CSS.escape === "function") return window.CSS.escape(value);
+        return String(value).replace(/[^a-zA-Z0-9_\-]/g, "\\$&");
+      }
+
+      function updatePingIndicator(serverName) {
+        const selector = `[data-server-name="${cssEscape(serverName)}"]`;
+        const indicator = document.querySelector(selector);
+        if (!indicator) return;
+        indicator.className = pingStatus[serverName] ? "ping-indicator ok" : "ping-indicator";
+      }
+
+      async function pingServer(serverName) {
+        try {
+          const response = await fetch(`/api/ping/${encodeURIComponent(serverName)}`, {
+            method: "PUT",
+          });
+
+          const data = await response.json().catch(() => null);
+          pingStatus[serverName] = Boolean(response.ok && data && data.alive === true);
+          updatePingIndicator(serverName);
+        } catch (error) {
+          pingStatus[serverName] = false;
+          updatePingIndicator(serverName);
+        }
+      }
+
+      function startPingChecks() {
+        servers.forEach((server) => {
+          pingStatus[server.name] = false;
+          updatePingIndicator(server.name);
+          pingServer(server.name);
         });
       }
 

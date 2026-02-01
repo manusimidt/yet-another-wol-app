@@ -1,3 +1,4 @@
+import { execFile } from "child_process";
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
@@ -144,6 +145,59 @@ app.post("/api/wake/:serverName", (req: Request<{ serverName: string }, unknown,
     res.json({ success: true, message: `WOL packet sent to ${server.name}` });
   });
 });
+
+// Ping server (ICMP via system ping)
+app.put("/api/ping/:serverName", async (req: Request<{ serverName: string }, unknown, unknown>, res: Response) => {
+  const { serverName } = req.params;
+
+  // Find server
+  const server = config.servers.find((s) => s.name === decodeURIComponent(serverName));
+  if (!server) {
+    res.status(404).json({ error: "Invalid PIN or server not found" });
+    return;
+  }
+
+  if (!server.ip) {
+    res.status(400).json({ error: "Server has no IP configured" });
+    return;
+  }
+
+  const effectiveTimeoutMs = 10000;
+  try {
+    const result = await pingIp(server.ip, effectiveTimeoutMs);
+    console.log(`Ping result for ${server.name} (${server.ip}): alive=${result.alive}, timeMs=${result.timeMs}`);
+    res.json({
+      ip: server.ip,
+      alive: result.alive,
+      timeMs: result.timeMs,
+    });
+  } catch (error) {
+    console.error(`Error pinging ${server.name} (${server.ip}):`, error);
+    res.status(500).json({ error: "Failed to ping server" });
+  }
+});
+
+function pingIp(ip: string, timeoutMs: number): Promise<{ alive: boolean; timeMs?: number }> {
+  const args = ["-c", "1", "-W", String(Math.max(1, Math.ceil(timeoutMs / 1000))), ip];
+
+  return new Promise((resolve) => {
+    execFile(
+      "ping",
+      args,
+      {
+        timeout: Math.max(1, Math.floor(timeoutMs) + 500),
+        windowsHide: true,
+        maxBuffer: 1024 * 1024,
+      },
+      (error, stdout) => {
+        const output = String(stdout || "");
+        const timeMatch = output.match(/time[=<]\s*([0-9.]+)\s*ms/i);
+        const timeMs = timeMatch ? Number.parseFloat(timeMatch[1]) : undefined;
+        resolve({ alive: !error, timeMs: Number.isFinite(timeMs) ? timeMs : undefined });
+      },
+    );
+  });
+}
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   console.error("Unhandled error:", error);
