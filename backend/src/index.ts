@@ -91,6 +91,25 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 
+// Serve static assets from frontend/assets
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.method !== "GET" && req.method !== "HEAD") return next();
+  if (req.path.startsWith("/api/")) return next();
+
+  const ext = path.extname(req.path).toLowerCase();
+  const targetExt = new Set([".png", ".jpg", ".svg", ".ico"]);
+  if (!targetExt.has(ext)) return next();
+
+  // Serve by basename only to avoid path traversal and to ensure
+  // requests like /favicon.ico or /apple-touch-icon.png work.
+  const filename = path.basename(req.path);
+  const candidatePath = path.join(__dirname, "../../frontend/assets", filename);
+  fs.access(candidatePath, fs.constants.R_OK, (err) => {
+    if (err) return next();
+    res.sendFile(candidatePath);
+  });
+});
+
 // Serve frontend
 app.use(express.static(path.join(__dirname, "../../frontend")));
 
