@@ -364,6 +364,8 @@
           button.className = "wake-button";
           button.textContent = "Wake Up";
           button.onclick = () => wakeServer(server.name);
+          button.dataset.serverName = server.name;
+          button.disabled = pingStatus[server.name];
 
           card.appendChild(indicator);
           card.appendChild(nameEl);
@@ -383,6 +385,12 @@
         const indicator = document.querySelector(selector);
         if (!indicator) return;
         indicator.className = pingStatus[serverName] ? "ping-indicator ok" : "ping-indicator";
+
+        // Update button disabled state
+        const button = document.querySelector(`button[data-server-name="${cssEscape(serverName)}"]`);
+        if (button) {
+          button.disabled = pingStatus[serverName];
+        }
       }
 
       async function pingServer(serverName) {
@@ -406,6 +414,13 @@
           updatePingIndicator(server.name);
           pingServer(server.name);
         });
+
+        // Ping all servers every 5 seconds
+        setInterval(() => {
+          servers.forEach((server) => {
+            pingServer(server.name);
+          });
+        }, 5000);
       }
 
       // Wake server
